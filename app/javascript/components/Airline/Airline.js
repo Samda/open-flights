@@ -4,6 +4,7 @@ import Header from './Header'
 import ViewForm from './ReviewForm'
 import styled from 'styled-components'
 import ReviewForm from './ReviewForm'
+import Review from './Review'
 
 const Wrapper = styled.div`
     margin-left: auto;
@@ -57,9 +58,29 @@ const Airline = (props) => {
         const airline_id = airline.data.id
         axios.post('/api/v1/reviews', { review, airline_id})
             .then( res => {
-                debugger 
+                const included = [...airline.included, res.data.data]
+                setAirline({...airline, included})
+                setReview({title: '', description: '', score: 0 })
             })
             .catch( res => console.log(res))
+    }
+
+    const setRating = (score, e) => {
+        e.preventDefault()
+        setReview({...review, score})
+        console.log(review)
+    }
+
+    let reviews 
+    if (loaded && airline.included) {
+        reviews = airline.included.map( (item, index) => {
+            return (
+                <Review
+                    key={index}
+                    attributes={item.attributes}
+                />
+            )
+        })
     }
 
     return (
@@ -73,7 +94,7 @@ const Airline = (props) => {
                                 attributes={airline.data.attributes}
                                 review={review}
                             />
-                            <div className="reviews"></div>
+                            {reviews}
                         </Main>
                     </Column>
                     <Column>
@@ -81,6 +102,7 @@ const Airline = (props) => {
                             handleChange={handleChange}
                             handleSubmit={handleSubmit}
                             attributes={airline.data.attributes}
+                            setRating={setRating}
                             review={review}
                         />
                     </Column>

@@ -22,7 +22,7 @@ class Api::V1::ReviewsController < ApplicationController
     end
 
     private
-
+    
     def airline
         @airline ||= Airline.find(params[:airline_id])
     end
